@@ -90,6 +90,7 @@ model Customer {
   contactNumber   String
   emailId         String   @unique
   Sites           Site[]
+  Task           Task[]
 }
 
 model Site {
@@ -102,6 +103,7 @@ model Site {
   contactNumber   String
   emailId         String
   Customer        Customer  @relation(fields: [customerId], references: [id])
+  Task            Task[]
 }
 
 
@@ -109,13 +111,16 @@ model Task{
   id              Int     @id @default(autoincrement())
   serviceId      Int
   departmentId    Int
-  customerName    String
-  customerAddress String
-  gstNo           String
-  contactName   String
-  contactNo     String
-  emailId        String
-  requirement   String 
+  customerId      Int
+  siteId          Int
+  workScope       String
+  proposedDate      String
+  priority           String
+  remark             String
+  status             String
+  
+  Customer      Customer @relation(fields: [customerId], references: [id])
+  Site     Site @relation(fields: [siteId], references: [id])
   Service      Service @relation(fields: [serviceId], references: [id])
   Department     Department @relation(fields: [departmentId], references: [id])
 }

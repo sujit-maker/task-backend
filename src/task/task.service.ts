@@ -8,19 +8,16 @@ export class TaskService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll() {
-    const tasks = await this.prisma.task.findMany({
+    return await this.prisma.task.findMany({
       include: {
         Service: true,
         Department: true,
+        Site:true,
+        Customer:true,
       },
     });
-
-    return tasks.map(task => ({
-      ...task,
-      contactNo: task.contactNo.toString(), 
-    }));
   }
-
+  
   async findOne(id: number) {
     const task = await this.prisma.task.findUnique({
       where: { id },
@@ -29,29 +26,25 @@ export class TaskService {
         Department: true,
       },
     });
-
+  
     if (!task) {
       throw new NotFoundException(`Task with id ${id} not found`);
     }
-
-    return {
-      ...task,
-      contactNo: task.contactNo.toString(), 
-    };
+    return task;
   }
-
+  
   async create(createTaskDto: CreateTaskDto) {
     return this.prisma.task.create({
       data: {
         serviceId: createTaskDto.serviceId,
         departmentId: createTaskDto.departmentId,
-        customerName: createTaskDto.customerName,
-        customerAddress: createTaskDto.customerAddress,
-        gstNo: createTaskDto.gstNo,
-        contactName: createTaskDto.contactName,
-        contactNo: createTaskDto.contactNo.toString(), 
-        emailId: createTaskDto.emailId,
-        requirement: createTaskDto.requirement,
+        customerId: createTaskDto.customerId,
+        siteId: createTaskDto.siteId,
+        workScope: createTaskDto.workScope,
+        proposedDate: createTaskDto.proposedDate,
+        priority: createTaskDto.priority,
+       remark: createTaskDto.remark,
+        status: createTaskDto.status,
       },
     });
   }
@@ -67,13 +60,13 @@ export class TaskService {
       data: {
         serviceId: updateTaskDto.serviceId,
         departmentId: updateTaskDto.departmentId,
-        customerName: updateTaskDto.customerName,
-        customerAddress: updateTaskDto.customerAddress,
-        gstNo: updateTaskDto.gstNo,
-        contactName: updateTaskDto.contactName,
-        contactNo: updateTaskDto.contactNo.toString(), 
-        emailId: updateTaskDto.emailId,
-        requirement: updateTaskDto.requirement,
+        customerId: updateTaskDto.customerId,
+        siteId:updateTaskDto.siteId,
+        workScope: updateTaskDto.workScope,
+        proposedDate: updateTaskDto.proposedDate,
+        priority: updateTaskDto.priority,
+       remark: updateTaskDto.remark,
+        status: updateTaskDto.status,
       },
     });
   }
@@ -101,6 +94,4 @@ async findServicesByDepartment(departmentId: number) {
 
   return services;
 }
-
-
 }

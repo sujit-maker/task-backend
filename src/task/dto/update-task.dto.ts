@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsEmail, IsInt, isInt, IsIn, IsPositive } from 'class-validator';
+import { IsNotEmpty, IsString,IsInt } from 'class-validator';
 
 export class UpdateTaskDto {
   @IsNotEmpty()
@@ -10,30 +10,30 @@ export class UpdateTaskDto {
   departmentId: number;
 
   @IsNotEmpty()
-  @IsString()
-  customerName: string;
+  @IsInt()
+  customerId: number;
 
   @IsNotEmpty()
-  @IsEmail()
-  customerAddress: string;
-
-  @IsNotEmpty()
-  @IsString()
-  gstNo: string; 
+  @IsInt()
+  siteId: number;
 
   @IsNotEmpty()
   @IsString()
-  contactName: string;
+  workScope: string; 
+
+  @IsNotEmpty()
+  @IsString()
+  proposedDate: string;
   
- @IsNotEmpty()
-   @IsPositive() 
-   contactNo: string;
+  @IsNotEmpty()
+  @IsString() 
+  priority : string;
 
   @IsNotEmpty()
   @IsString()
-  emailId: string; 
+  remark: string; 
 
   @IsNotEmpty()
   @IsString()
-  requirement: string; 
+  status: string; 
 }

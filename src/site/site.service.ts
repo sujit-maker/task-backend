@@ -25,6 +25,14 @@ export class SiteService {
       },
     });
   }
+
+   // Get Sites by Customer ID
+   async findByCustomerId(customerId: number) {
+    return this.prisma.site.findMany({
+      where: { customerId: customerId },
+    });
+  }
+  
   // Get a specific Site by ID
   async findOne(id: number) {
     return this.prisma.site.findUnique({

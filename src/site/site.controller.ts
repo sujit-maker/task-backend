@@ -13,6 +13,17 @@ export class SiteController {
     return this.siteService.create(createSiteDto);
   }
 
+   // Get sites by customer ID
+   @Get('customer/:customerId')
+   async findByCustomerId(@Param('customerId') customerId: string) {
+     const parsedCustomerId = parseInt(customerId, 10);
+     if (isNaN(parsedCustomerId)) {
+       throw new Error('Invalid customer ID');
+     }
+     return this.siteService.findByCustomerId(parsedCustomerId);
+   }
+
+   
   // Get all sites
   @Get()
   async findAll() {
