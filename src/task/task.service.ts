@@ -10,7 +10,7 @@ export class TaskService {
   async findAll() {
     const tasks = await this.prisma.task.findMany({
       include: {
-        TaskType: true,
+        Service: true,
         Department: true,
       },
     });
@@ -25,7 +25,7 @@ export class TaskService {
     const task = await this.prisma.task.findUnique({
       where: { id },
       include: {
-        TaskType: true,
+        Service: true,
         Department: true,
       },
     });
@@ -43,7 +43,7 @@ export class TaskService {
   async create(createTaskDto: CreateTaskDto) {
     return this.prisma.task.create({
       data: {
-        taskTypeId: createTaskDto.taskTypeId,
+        serviceId: createTaskDto.serviceId,
         departmentId: createTaskDto.departmentId,
         customerName: createTaskDto.customerName,
         customerAddress: createTaskDto.customerAddress,
@@ -65,7 +65,7 @@ export class TaskService {
     return this.prisma.task.update({
       where: { id },
       data: {
-        taskTypeId: updateTaskDto.taskTypeId,
+        serviceId: updateTaskDto.serviceId,
         departmentId: updateTaskDto.departmentId,
         customerName: updateTaskDto.customerName,
         customerAddress: updateTaskDto.customerAddress,
@@ -86,4 +86,21 @@ export class TaskService {
 
     return this.prisma.task.delete({ where: { id } });
   }
+
+  // Fetch services based on departmentId
+async findServicesByDepartment(departmentId: number) {
+  // Ensure departmentId is a number (in case it's passed as a string)
+  const parsedDepartmentId = parseInt(departmentId.toString(), 10);
+
+  // Fetch services for the departmentId
+  const services = await this.prisma.service.findMany({
+    where: {
+      departmentId: parsedDepartmentId,
+    },
+  });
+
+  return services;
+}
+
+
 }

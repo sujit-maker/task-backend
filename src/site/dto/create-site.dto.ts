@@ -11,6 +11,14 @@ export class CreateSiteDto {
 
   @IsNotEmpty()
   @IsString()
+  siteAddress: string;
+
+  @IsNotEmpty()
+  @IsString()
+  contactName: string;
+
+  @IsNotEmpty()
+  @IsString()
   contactNumber: string;
 
   @IsNotEmpty()

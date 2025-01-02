@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, BadRequestException, Patch } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -27,7 +27,7 @@ export class CategoryController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
+  async update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
     const numericId = parseInt(id, 10);
     if (isNaN(numericId)) {
       throw new BadRequestException('Invalid ID');

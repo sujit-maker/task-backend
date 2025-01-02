@@ -13,6 +13,11 @@ export class TaskController {
     return this.taskService.findAll();
   }
 
+  @Get('services/:departmentId')
+  async findServicesByDepartment(@Param('departmentId') departmentId: number) {
+    return this.taskService.findServicesByDepartment(departmentId);
+  }
+
   // Get a single task by id
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {

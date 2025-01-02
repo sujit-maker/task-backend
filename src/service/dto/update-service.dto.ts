@@ -14,5 +14,5 @@ export class UpdateServiceDto {
   SAC: string;
 
   @IsNotEmpty()
-  serviceTypeId: number;
+  departmentId: number;
 }

@@ -11,8 +11,8 @@ model Department {
   id              Int      @id @default(autoincrement())
   departmentName  String
   Users           Users[]  
-  TaskType        TaskType[]
   Task            Task[]
+  Service         Service[]
 }
 
 model Users {
@@ -57,22 +57,15 @@ model Product {
 }
 
 
-
-// Define the ServiceType model
-model ServiceType {
-  id          Int       @id @default(autoincrement())
-  serviceType String     @unique
-  Services    Service[]
-}
-
 // Define the Service model
 model Service {
   id                 Int         @id @default(autoincrement())
   serviceName        String
   serviceDescription String
   SAC                String
-  serviceTypeId      Int
-  ServiceType        ServiceType @relation(fields: [serviceTypeId], references: [id])
+  departmentId      Int
+  Department     Department @relation(fields: [departmentId], references: [id])
+  Task          Task[]
 }
 
 // Define the Vendor model
@@ -104,22 +97,17 @@ model Site {
   siteId          String    @unique
   customerId      Int
   siteName        String
+  siteAddress     String
+  contactName     String
   contactNumber   String
   emailId         String
   Customer        Customer  @relation(fields: [customerId], references: [id])
 }
 
-model TaskType{
-  id              Int     @id @default(autoincrement())
-  taskType        String
-  departmentId    Int
-  Department     Department @relation(fields: [departmentId], references: [id])
-  Task     Task[]
-}
 
 model Task{
   id              Int     @id @default(autoincrement())
-  taskTypeId      Int
+  serviceId      Int
   departmentId    Int
   customerName    String
   customerAddress String
@@ -128,6 +116,6 @@ model Task{
   contactNo     String
   emailId        String
   requirement   String 
-  TaskType      TaskType @relation(fields: [taskTypeId], references: [id])
+  Service      Service @relation(fields: [serviceId], references: [id])
   Department     Department @relation(fields: [departmentId], references: [id])
 }

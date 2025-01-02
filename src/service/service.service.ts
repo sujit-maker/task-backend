@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service'; // Adjust the path according to your project structure
+import { PrismaService } from 'src/prisma/prisma.service'; 
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
 
@@ -9,14 +9,14 @@ export class ServiceService {
 
   // Create a new Service
   async createService(createServiceDto: CreateServiceDto) {
-    const { serviceName, serviceDescription, SAC, serviceTypeId } = createServiceDto;
+    const { serviceName, serviceDescription, SAC, departmentId } = createServiceDto;
 
     return this.prisma.service.create({
       data: {
         serviceName,
         serviceDescription,
         SAC,
-        serviceTypeId,
+        departmentId,
       },
     });
   }
@@ -25,7 +25,7 @@ export class ServiceService {
   async getAllServices() {
     return this.prisma.service.findMany({
       include: {
-        ServiceType: true, // Include the related ServiceType
+        Department: true, 
       },
     });
   }
@@ -35,14 +35,14 @@ export class ServiceService {
     return this.prisma.service.findUnique({
       where: { id },
       include: {
-        ServiceType: true, // Include the related ServiceType
+        Department: true, 
       },
     });
   }
 
   // Update a Service by ID
   async updateService(id: number, updateServiceDto: UpdateServiceDto) {
-    const { serviceName, serviceDescription, SAC, serviceTypeId } = updateServiceDto;
+    const { serviceName, serviceDescription, SAC, departmentId } = updateServiceDto;
 
     return this.prisma.service.update({
       where: { id },
@@ -50,7 +50,7 @@ export class ServiceService {
         serviceName,
         serviceDescription,
         SAC,
-        serviceTypeId,
+        departmentId,
       },
     });
   }

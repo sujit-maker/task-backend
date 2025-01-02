@@ -14,5 +14,5 @@ export class CreateServiceDto {
   SAC: string;
 
   @IsNotEmpty()
-  serviceTypeId: number;
+  departmentId: number;
 }

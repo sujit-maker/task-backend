@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString, IsEmail, IsInt, isInt, IsIn, IsPositive } from 'c
 export class UpdateTaskDto {
   @IsNotEmpty()
   @IsInt()
-  taskTypeId: number;
+  serviceId: number;
 
   @IsNotEmpty()
   @IsInt()

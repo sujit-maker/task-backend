@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString, IsEmail, IsInt, IsPositive } from 'class-validato
 export class CreateTaskDto {
   @IsNotEmpty()
   @IsInt()
-  taskTypeId: number;
+  serviceId: number;
 
   @IsNotEmpty()
   @IsInt()
