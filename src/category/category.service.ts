@@ -62,7 +62,6 @@ export class CategoryService {
       data: {
         categoryName,
         subCategories: {
-          deleteMany: {}, 
           create: subCategories, 
         },
       },
