@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Department {
+  id              Int      @id @default(autoincrement())
+  departmentName  String
+  Users           Users[]  
+  TaskType        TaskType[]
+  Task            Task[]
+}
+
+model Users {
+  id             Int        @id @default(autoincrement())
+  username       String     @unique
+  password       String
+  userType       String
+  firstName      String
+  lastName       String
+  contactNumber  String
+  emailId        String     @unique
+  departmentId   Int        
+  Department     Department @relation(fields: [departmentId], references: [id]) 
+}
+
+model Category {
+  id             Int           @id @default(autoincrement())
+  categoryName   String       
+  subCategories  SubCategory[] 
+  products       Product[]    
+}
+
+model SubCategory {
+  id            Int      @id @default(autoincrement())
+  subCategoryName String
+  categoryId     Int
+  category       Category @relation(fields: [categoryId], references: [id])
+  products Product[] 
+}
+
+
+model Product {
+  id                 Int        @id @default(autoincrement())
+  productId          String     @unique
+  productName        String
+  productDescription String
+  HSN                String
+  categoryId         Int
+  subCategoryId      Int
+  category           Category   @relation(fields: [categoryId], references: [id]) 
+  subCategory        SubCategory @relation(fields: [subCategoryId], references: [id]) 
+}
+
+
+
+// Define the ServiceType model
+model ServiceType {
+  id          Int       @id @default(autoincrement())
+  serviceType String     @unique
+  Services    Service[]
+}
+
+// Define the Service model
+model Service {
+  id                 Int         @id @default(autoincrement())
+  serviceName        String
+  serviceDescription String
+  SAC                String
+  serviceTypeId      Int
+  ServiceType        ServiceType @relation(fields: [serviceTypeId], references: [id])
+}
+
+// Define the Vendor model
+model Vendor {
+  id              Int    @id @default(autoincrement())
+  vendorName      String
+  registerAddress String
+  gstNo           String  @unique
+  contactName     String
+  contactNumber   String
+  emailId         String  @unique
+}
+
+// Define the Customer model
+model Customer {
+  id              Int     @id @default(autoincrement())
+  customerId      String   @unique
+  customerName    String
+  registerAddress String
+  gstNo           String   @unique
+  contactName     String
+  contactNumber   String
+  emailId         String   @unique
+  Sites           Site[]
+}
+
+model Site {
+  id              Int      @id @default(autoincrement())
+  siteId          String    @unique
+  customerId      Int
+  siteName        String
+  contactNumber   String
+  emailId         String
+  Customer        Customer  @relation(fields: [customerId], references: [id])
+}
+
+model TaskType{
+  id              Int     @id @default(autoincrement())
+  taskType        String
+  departmentId    Int
+  Department     Department @relation(fields: [departmentId], references: [id])
+  Task     Task[]
+}
+
+model Task{
+  id              Int     @id @default(autoincrement())
+  taskTypeId      Int
+  departmentId    Int
+  customerName    String
+  customerAddress String
+  gstNo           String
+  contactName   String
+  contactNo     String
+  emailId        String
+  requirement   String 
+  TaskType      TaskType @relation(fields: [taskTypeId], references: [id])
+  Department     Department @relation(fields: [departmentId], references: [id])
+}
