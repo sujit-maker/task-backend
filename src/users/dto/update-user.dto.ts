@@ -22,7 +22,7 @@ export class UpdateUserDto {
   emailId?: string;
 
   @IsNotEmpty()
-    departmentId: number;
+    departmentId?: number;
 
   @IsString()
   @IsOptional()

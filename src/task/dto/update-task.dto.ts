@@ -36,4 +36,14 @@ export class UpdateTaskDto {
   @IsNotEmpty()
   @IsString()
   status: string; 
+
+  @IsInt()
+  hodId: number;
+
+  @IsInt()
+  managerId?: number;
+
+  @IsInt()
+  executiveId?: number;
+  
 }

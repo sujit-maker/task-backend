@@ -18,10 +18,26 @@ export class UsersController {
     return this.userService.getAllUsers();
   }
 
+  @Get('/hods')
+  async getHODs() {
+    return this.userService.getHODs();
+  }
+  
+  @Get('/executives')
+  async getExecutives() {
+    return this.userService.getExecutives();
+  }
+  
+  @Get('/managers')
+  async getManagers() {
+    return this.userService.getManagers();
+  }
+  
   @Get(':id')
   async getUserById(@Param('id') id: number) {
     return this.userService.getUserById(Number(id));
   }
+  
 
   @Put(':id')
   async updateUser(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {

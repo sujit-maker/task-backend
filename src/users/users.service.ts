@@ -11,16 +11,14 @@ export class UserService {
   async createUser(createUserDto: CreateUserDto) {
     const { password, departmentId, ...rest } = createUserDto;
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Save user to the database and connect the department using the departmentId
     return this.prisma.users.create({
       data: {
-        ...rest,  // Spread the rest of the fields from the DTO
+        ...rest,
         password: hashedPassword,
-        Department: {  // Use the correct relation (Department)
-          connect: {  // Connect using the departmentId
+        Department: {
+          connect: {
             id: departmentId,
           },
         },
@@ -38,22 +36,40 @@ export class UserService {
     });
   }
 
+  async getUsersByType(userType: string) {
+    return this.prisma.users.findMany({
+      where: { userType },
+    });
+  }
+
+  async getHODs() {
+    return this.getUsersByType('HOD');
+  }
+
+  async getExecutives() {
+    return this.getUsersByType('EXECUTIVE');
+  }
+
+  async getManagers() {
+    return this.getUsersByType('MANAGER');
+  }
+
+
   async updateUser(id: number, updateUserDto: UpdateUserDto) {
     const { password, ...rest } = updateUserDto;
-  
+
     let updatedData: Partial<UpdateUserDto> = { ...rest };
-  
+
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
       updatedData = { ...updatedData, password: hashedPassword };
     }
-  
+
     return this.prisma.users.update({
       where: { id },
       data: updatedData,
     });
   }
-  
 
   async deleteUser(id: number) {
     return this.prisma.users.delete({

@@ -27,5 +27,5 @@ export class CreateUserDto {
 
   @IsInt()
   @IsNotEmpty()
-  departmentId: number;
+  departmentId?: number;
 }

@@ -118,7 +118,10 @@ model Task{
   priority           String
   remark             String
   status             String
-  
+  hodId              Int
+  managerId          Int
+  executiveId        Int
+
   Customer      Customer @relation(fields: [customerId], references: [id])
   Site     Site @relation(fields: [siteId], references: [id])
   Service      Service @relation(fields: [serviceId], references: [id])

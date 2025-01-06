@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service'; // Ensure correct path
+import { PrismaService } from '../prisma/prisma.service'; 
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
@@ -10,20 +10,48 @@ export class TaskService {
   async findAll() {
     return await this.prisma.task.findMany({
       include: {
-        Service: true,
-        Department: true,
-        Site:true,
-        Customer:true,
+        Service: {
+          select: { serviceName: true }, 
+        },
+        Department: {
+          select: { departmentName: true },
+        },
+        Customer: {
+          select: { customerName: true },
+        },
+        Site: {
+          select: { siteName: true }, 
+        },
       },
     });
   }
+  
+  
   
   async findOne(id: number) {
     const task = await this.prisma.task.findUnique({
       where: { id },
       include: {
-        Service: true,
-        Department: true,
+        Service: {
+          select: {
+            serviceName: true, 
+          },
+        },
+        Department: {
+          select: {
+            departmentName: true, 
+          },
+        },
+        Customer: {
+          select: {
+            customerName: true, 
+          },
+        },
+        Site: {
+          select: {
+            siteName: true, 
+          },
+        },
       },
     });
   
@@ -32,6 +60,7 @@ export class TaskService {
     }
     return task;
   }
+  
   
   async create(createTaskDto: CreateTaskDto) {
     return this.prisma.task.create({
@@ -45,6 +74,9 @@ export class TaskService {
         priority: createTaskDto.priority,
        remark: createTaskDto.remark,
         status: createTaskDto.status,
+        hodId: createTaskDto.hodId,
+        managerId: createTaskDto.managerId,
+        executiveId: createTaskDto.executiveId
       },
     });
   }
@@ -67,6 +99,9 @@ export class TaskService {
         priority: updateTaskDto.priority,
        remark: updateTaskDto.remark,
         status: updateTaskDto.status,
+        hodId:updateTaskDto.hodId,
+        managerId:updateTaskDto.managerId,
+        executiveId:updateTaskDto.executiveId
       },
     });
   }
@@ -80,12 +115,12 @@ export class TaskService {
     return this.prisma.task.delete({ where: { id } });
   }
 
-  // Fetch services based on departmentId
+  
 async findServicesByDepartment(departmentId: number) {
-  // Ensure departmentId is a number (in case it's passed as a string)
+  
   const parsedDepartmentId = parseInt(departmentId.toString(), 10);
 
-  // Fetch services for the departmentId
+  
   const services = await this.prisma.service.findMany({
     where: {
       departmentId: parsedDepartmentId,
