@@ -16,7 +16,20 @@ import { DepartmentModule } from './department/department.module';
 import { TaskModule } from './task/task.module';
 
 @Module({
-  imports: [UsersModule, CategoryModule, ProductsModule, ServiceModule,PrismaModule, VendorModule, CustomerModule, SiteModule, SubcategeoryModule, AuthModule, DepartmentModule, TaskModule],
+  imports: [
+    UsersModule,
+    CategoryModule,
+    ProductsModule,
+    ServiceModule,
+    PrismaModule,
+    VendorModule,
+    CustomerModule,
+    SiteModule,
+    SubcategeoryModule,
+    AuthModule,
+    DepartmentModule,
+    TaskModule,
+  ],
   controllers: [ServiceController, CustomerController],
   providers: [ServiceService],
 })

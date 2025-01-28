@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service'; 
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { UserService } from 'src/users/users.service';
 
 @Injectable()
 export class TaskService {
@@ -10,16 +11,16 @@ export class TaskService {
   async findAll() {
     return await this.prisma.task.findMany({
       include: {
-        Service: {
+        service: {
           select: { serviceName: true }, 
         },
-        Department: {
+        department: {
           select: { departmentName: true },
         },
-        Customer: {
+        customer: {
           select: { customerName: true },
         },
-        Site: {
+        site: {
           select: { siteName: true }, 
         },
       },
@@ -28,60 +29,100 @@ export class TaskService {
   
   
   
-  async findOne(id: number) {
-    const task = await this.prisma.task.findUnique({
-      where: { id },
-      include: {
-        Service: {
-          select: {
-            serviceName: true, 
-          },
-        },
-        Department: {
-          select: {
-            departmentName: true, 
-          },
-        },
-        Customer: {
-          select: {
-            customerName: true, 
-          },
-        },
-        Site: {
-          select: {
-            siteName: true, 
-          },
-        },
-      },
-    });
-  
-    if (!task) {
-      throw new NotFoundException(`Task with id ${id} not found`);
+  async findTasksByUser(userId: number) {
+    const numericId = Number(userId);
+
+    if (isNaN(numericId)) {
+      throw new NotFoundException(`Invalid User ID: ${userId}`);
     }
-    return task;
-  }
-  
-  
-  async create(createTaskDto: CreateTaskDto) {
-    return this.prisma.task.create({
-      data: {
-        serviceId: createTaskDto.serviceId,
-        departmentId: createTaskDto.departmentId,
-        customerId: createTaskDto.customerId,
-        siteId: createTaskDto.siteId,
-        workScope: createTaskDto.workScope,
-        proposedDate: createTaskDto.proposedDate,
-        priority: createTaskDto.priority,
-       remark: createTaskDto.remark,
-        status: createTaskDto.status,
-        hodId: createTaskDto.hodId,
-        managerId: createTaskDto.managerId,
-        executiveId: createTaskDto.executiveId
+
+    const tasks = await this.prisma.task.findMany({
+      where: {
+        OR: [
+          { hodId: numericId },
+          { managerId: numericId },
+          { executiveId: numericId },
+        ],
+      },
+      include: {
+        service: {
+          select: { serviceName: true },
+        },
+        department: {
+          select: { departmentName: true },
+        },
+        customer: {
+          select: { customerName: true },
+        },
+        site: {
+          select: { siteName: true },
+        },
       },
     });
+
+    if (tasks.length === 0) {
+      throw new NotFoundException(`No tasks found for user with id ${userId}`);
+    }
+
+    return tasks;
   }
 
+  async create(createTaskDto: CreateTaskDto) {
+    const { managerId, executiveId, hodId, serviceId, departmentId, customerId, siteId, ...taskData } = createTaskDto;
+  
+    // Validate HOD ID
+    const hodExists = await this.prisma.users.findUnique({ where: { id: hodId } });
+    if (!hodExists) {
+      throw new Error(`HOD with ID ${hodId} not found`);
+    }
+  
+    // Validate Manager ID (if provided)
+    if (managerId) {
+      const managerExists = await this.prisma.users.findUnique({ where: { id: managerId } });
+      if (!managerExists) {
+        throw new Error(`Manager with ID ${managerId} not found`);
+      }
+    }
+  
+    // Validate Executive ID (if provided)
+    if (executiveId) {
+      const executiveExists = await this.prisma.users.findUnique({ where: { id: executiveId } });
+      if (!executiveExists) {
+        throw new Error(`Executive with ID ${executiveId} not found`);
+      }
+    }
+  
+    // Build assignedUsers connections
+    const assignedUsersConnect = [
+      { id: hodId },
+      ...(managerId ? [{ id: managerId }] : []),
+      ...(executiveId ? [{ id: executiveId }] : []),
+    ];
+  
+    return this.prisma.task.create({
+      data: {
+        ...taskData,
+        hodId,
+        managerId: managerId || null,
+        executiveId: executiveId || null,
+        service: { connect: { id: serviceId } },
+        department: { connect: { id: departmentId } },
+        customer: { connect: { id: customerId } },
+        site: { connect: { id: siteId } },
+        assignedUsers: { connect: assignedUsersConnect },
+      },
+      include: {
+        assignedUsers: true,
+      },
+    });
+  }
+  
+  
+  
+
   async update(id: number, updateTaskDto: UpdateTaskDto) {
+    const managerId = updateTaskDto.managerId === -1 ? null : updateTaskDto.managerId;
+    const executiveId = updateTaskDto.executiveId === -1 ? null : updateTaskDto.executiveId;
     const existingTask = await this.prisma.task.findUnique({ where: { id } });
     if (!existingTask) {
       throw new NotFoundException(`Task with id ${id} not found`);
@@ -100,8 +141,8 @@ export class TaskService {
        remark: updateTaskDto.remark,
         status: updateTaskDto.status,
         hodId:updateTaskDto.hodId,
-        managerId:updateTaskDto.managerId,
-        executiveId:updateTaskDto.executiveId
+        managerId,
+        executiveId,
       },
     });
   }

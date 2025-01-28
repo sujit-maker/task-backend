@@ -12,16 +12,15 @@ export class TaskController {
   async findAll() {
     return this.taskService.findAll();
   }
-
+  
   @Get('services/:departmentId')
   async findServicesByDepartment(@Param('departmentId') departmentId: number) {
     return this.taskService.findServicesByDepartment(departmentId);
   }
 
-  // Get a single task by id
-  @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.taskService.findOne(id);
+  @Get('user/:userId')
+  async findTasksByUser(@Param('userId') userId: number) {
+    return this.taskService.findTasksByUser(userId);
   }
 
   // Create a new task

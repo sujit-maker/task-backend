@@ -6,5 +6,5 @@ export class UpdateCategoryDto {
   categoryName: string;
 
   @IsOptional()
-  subCategories?: { subCategoryName: string }[]; // Ensure this matches your Prisma relation structure
+  subCategories: { subCategoryName: string }[];
 }

@@ -7,5 +7,5 @@ export class CreateCategoryDto {
 
   @IsNotEmpty()
   @IsString()
-  subCategoryName: string;
+  subCategories: { subCategoryName: string }[];
 }

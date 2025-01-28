@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsEmail } from 'class-validator';
+import { IsNotEmpty, IsString, IsEmail, IsInt, IsOptional } from 'class-validator';
 
 export class CreateVendorDto {
   @IsNotEmpty()
@@ -24,4 +24,12 @@ export class CreateVendorDto {
   @IsNotEmpty()
   @IsEmail()
   emailId: string;
+
+  @IsInt()
+    @IsOptional()
+    hodId?: number; 
+  
+    @IsInt()
+    @IsOptional()
+    managerId?: number; 
 }

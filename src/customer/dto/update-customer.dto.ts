@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsEmail } from 'class-validator';
+import { IsOptional, IsString, IsEmail, IsInt } from 'class-validator';
 
 export class UpdateCustomerDto {
 
@@ -29,4 +29,14 @@ export class UpdateCustomerDto {
   @IsOptional()
   @IsEmail()
   emailId?: string;
+
+  
+    @IsInt()
+      hodId: number;
+    
+      @IsInt()
+      managerId?: number;
+    
+      @IsInt()
+      executiveId?: number;
 }

@@ -7,28 +7,25 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 export class CategoryService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // Create a new category with subcategories
+  
   async createCategory(createCategoryDto: CreateCategoryDto) {
-    const { categoryName, subCategoryName } = createCategoryDto;
+    const { categoryName, subCategories } = createCategoryDto;
   
     return this.prisma.category.create({
       data: {
         categoryName,
         subCategories: {
-          create: [
-            {
-              subCategoryName, // Create subcategory with the provided name
-            },
-          ],
+          create: subCategories, // Create multiple subcategories
         },
       },
       include: {
-        subCategories: true, // Include subcategories in the response
+        subCategories: true, // Return the subcategories with the created category
       },
     });
   }
   
-  // Get all categories with subcategories
+  
+  
   async getCategories() {
     return this.prisma.category.findMany({
       include: {
@@ -37,7 +34,7 @@ export class CategoryService {
     });
   }
 
-  // Get a specific category by its ID
+  
   async getCategoryById(id: number) {
     const category = await this.prisma.category.findUnique({
       where: { id },
@@ -53,7 +50,7 @@ export class CategoryService {
     return category;
   }
 
-  // Update a category and its subcategories
+  
   async updateCategory(id: number, updateCategoryDto: UpdateCategoryDto) {
     const { categoryName, subCategories } = updateCategoryDto;
   
@@ -62,20 +59,27 @@ export class CategoryService {
       data: {
         categoryName,
         subCategories: {
-          create: subCategories, 
+          deleteMany: {}, // Remove all existing subcategories
+          create: subCategories, // Add new subcategories
         },
       },
       include: {
-        subCategories: true,
+        subCategories: true, // Include updated subcategories
       },
     });
   }
   
-  // Delete a category by its ID
+  
   async deleteCategory(id: number) {
     try {
+      
+      await this.prisma.subCategory.deleteMany({
+        where: { categoryId: id },
+      });
+  
+      
       return await this.prisma.category.delete({
-        where: { id: Number(id) },
+        where: { id },
       });
     } catch (error) {
       if (error.code === 'P2025') {
@@ -84,4 +88,5 @@ export class CategoryService {
       throw new InternalServerErrorException('Failed to delete category');
     }
   }
+  
 }
