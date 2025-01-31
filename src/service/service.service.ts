@@ -9,7 +9,7 @@ export class ServiceService {
 
   // Create a new Service
   async createService(createServiceDto: CreateServiceDto) {
-    const { serviceName, serviceDescription, SAC, departmentId } = createServiceDto;
+    const { serviceName, serviceDescription, SAC, departmentId,categoryId,subCategoryId } = createServiceDto;
 
     return this.prisma.service.create({
       data: {
@@ -17,6 +17,8 @@ export class ServiceService {
         serviceDescription,
         SAC,
         departmentId,
+        categoryId,
+        subCategoryId,
       },
     });
   }
@@ -26,6 +28,8 @@ export class ServiceService {
     return this.prisma.service.findMany({
       include: {
         Department: true, 
+        category: true,
+        subCategory: true,
       },
     });
   }
@@ -36,13 +40,15 @@ export class ServiceService {
       where: { id },
       include: {
         Department: true, 
+        category: true,
+        subCategory: true,
       },
     });
   }
 
   // Update a Service by ID
   async updateService(id: number, updateServiceDto: UpdateServiceDto) {
-    const { serviceName, serviceDescription, SAC, departmentId } = updateServiceDto;
+    const { serviceName, serviceDescription, SAC, departmentId,categoryId,subCategoryId } = updateServiceDto;
 
     return this.prisma.service.update({
       where: { id },
@@ -51,6 +57,8 @@ export class ServiceService {
         serviceDescription,
         SAC,
         departmentId,
+        categoryId,
+        subCategoryId,
       },
     });
   }

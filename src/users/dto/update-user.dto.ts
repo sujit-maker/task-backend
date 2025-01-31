@@ -21,8 +21,8 @@ export class UpdateUserDto {
   @IsOptional()
   emailId?: string;
 
-  @IsNotEmpty()
-  departmentIds: number[];
+  @IsOptional()
+  departmentIds?: number[];
 
   @IsString()
   @IsOptional()

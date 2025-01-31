@@ -37,6 +37,7 @@ model Category {
   categoryName  String
   subCategories SubCategory[] @relation("CategoryToSubCategory")
   products      Product[]
+  services      Service[]
 }
 
 model SubCategory {
@@ -45,6 +46,7 @@ model SubCategory {
   categoryId      Int
   category        Category  @relation(name: "CategoryToSubCategory", fields: [categoryId], references: [id], onDelete: Cascade)
   products        Product[]
+  services        Service[]
 }
 
 model Product {
@@ -66,8 +68,12 @@ model Service {
   serviceDescription String
   SAC                String
   departmentId       Int
+  categoryId         Int
+  subCategoryId      Int
+  category           Category    @relation(fields: [categoryId], references: [id])
+  subCategory        SubCategory @relation(fields: [subCategoryId], references: [id])
   Department         Department @relation(fields: [departmentId], references: [id])
-  Task               Task[]
+  Task               Task[]     
 }
 
 // Define the Vendor model

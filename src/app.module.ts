@@ -10,7 +10,7 @@ import { VendorModule } from './vendor/vendor.module';
 import { CustomerController } from './customer/customer.controller';
 import { CustomerModule } from './customer/customer.module';
 import { SiteModule } from './site/site.module';
-import { SubcategeoryModule } from './subcategeory/subcategeory.module';
+import { SubcategoryModule } from './subcategeory/subcategory.module';
 import { AuthModule } from './auth/auth.module';
 import { DepartmentModule } from './department/department.module';
 import { TaskModule } from './task/task.module';
@@ -25,7 +25,7 @@ import { TaskModule } from './task/task.module';
     VendorModule,
     CustomerModule,
     SiteModule,
-    SubcategeoryModule,
+    SubcategoryModule,
     AuthModule,
     DepartmentModule,
     TaskModule,

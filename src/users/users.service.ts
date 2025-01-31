@@ -11,7 +11,6 @@ export class UserService {
   async createUser(createUserDto: CreateUserDto) {
     const { password, departmentIds, ...rest } = createUserDto;
   
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
   
     return this.prisma.users.create({
@@ -19,17 +18,39 @@ export class UserService {
         ...rest,
         password: hashedPassword,
         departments: {
-          connect: departmentIds.map((id) => ({ id })), // Correctly connect multiple departments
+          connect: departmentIds.map((id) => ({ id })), 
         },
       },
     });
   }
 
+  async updateUser(id: number, updateUserDto: UpdateUserDto) {
+    const { password, departmentIds = [], ...rest } = updateUserDto; // Ensure departmentIds is always an array
+  
+    let updatedData: Partial<UpdateUserDto> = { ...rest };
+  
+    // Hash the password if provided
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updatedData.password = hashedPassword;
+    }
+  
+    return this.prisma.users.update({
+      where: { id },
+      data: {
+        ...updatedData,
+        departments: departmentIds.length > 0 ? { set: departmentIds.map((id) => ({ id })) } : undefined, // Only update departments if provided
+      },
+    });
+  }
+  
+  
+
   async getManagersByHOD(hodId: number) {
     return this.prisma.users.findMany({
       where: {
         userType: 'MANAGER',
-        hodId, // Assuming `hodId` is a foreign key in the users table
+        hodId, 
       },
     });
   }
@@ -38,7 +59,7 @@ export class UserService {
     return this.prisma.users.findMany({
       where: {
         userType: 'EXECUTIVE',
-        managerId, // Assuming `managerId` is a foreign key in the users table
+        managerId, 
       },
     });
   }
@@ -46,7 +67,7 @@ export class UserService {
   async getAllUsers() {
     return this.prisma.users.findMany({
       include: {
-        departments: true, // Include departments along with users
+        departments: true, 
       },
     });
   }
@@ -56,7 +77,7 @@ export class UserService {
     return this.prisma.users.findUnique({
       where: { id },
       include: {
-        departments: true, // Include departments when fetching user data
+        departments: true, 
       },
     });
   }
@@ -123,14 +144,14 @@ export class UserService {
     return this.prisma.users.findMany({
       where: {
         userType: 'HOD',
-        departments: {  // Use 'departments' (plural) instead of 'Department'
-          some: {       // 'some' is necessary for filtering in many-to-many relationships
-            departmentName: departmentName, // Filtering based on department name
+        departments: {  
+          some: {       
+            departmentName: departmentName, 
           },
         },
       },
       include: {
-        departments: true, // Include related departments
+        departments: true, 
       },
     });
   }
@@ -139,14 +160,14 @@ export class UserService {
     return this.prisma.users.findMany({
       where: {
         userType: 'MANAGER',
-        departments: {  // Use 'departments' (plural) instead of 'Department'
-          some: {       // 'some' is necessary for filtering in many-to-many relationships
-            departmentName: departmentName, // Filtering based on department name
+        departments: {  
+          some: {       
+            departmentName: departmentName, 
           },
         },
       },
       include: {
-        departments: true, // Include related departments
+        departments: true, 
       },
     });
   }
@@ -155,35 +176,19 @@ export class UserService {
     return this.prisma.users.findMany({
       where: {
         userType: 'EXECUTIVE',
-        departments: {  // Use 'departments' (plural) instead of 'Department'
-          some: {       // 'some' is necessary for filtering in many-to-many relationships
-            departmentName: departmentName, // Filtering based on department name
+        departments: {  
+          some: {       
+            departmentName: departmentName, 
           },
         },
       },
       include: {
-        departments: true, // Include related departments
+        departments: true, 
       },
     });
   }
 
-  
-  async updateUser(id: number, updateUserDto: UpdateUserDto) {
-    const { password, ...rest } = updateUserDto;
-
-    let updatedData: Partial<UpdateUserDto> = { ...rest };
-
-    // If there's a new password, hash it and include in the update
-    if (password) {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      updatedData = { ...updatedData, password: hashedPassword };
-    }
-
-    return this.prisma.users.update({
-      where: { id },
-      data: updatedData,
-    });
-  }
+ 
 
   async deleteUser(id: number) {
     return this.prisma.users.delete({

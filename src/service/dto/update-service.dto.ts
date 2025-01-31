@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 export class UpdateServiceDto {
   @IsNotEmpty()
@@ -15,4 +15,12 @@ export class UpdateServiceDto {
 
   @IsNotEmpty()
   departmentId: number;
+
+   @IsNotEmpty()
+    @IsInt()
+    categoryId:number;
+  
+    @IsNotEmpty()
+    @IsInt()
+    subCategoryId : number;
 }
