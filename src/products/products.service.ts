@@ -7,10 +7,16 @@ import { UpdateProductDto } from './dto/update-product.dto';
 export class ProductsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // Create a new product
   async createProduct(createProductDto: CreateProductDto) {
-    const { productId, productName, productDescription, HSN, categoryId, subCategoryId } = createProductDto;
-    
+    const {
+      productId,
+      productName,
+      productDescription,
+      HSN,
+      categoryId,
+      subCategoryId,
+    } = createProductDto;
+
     return this.prisma.product.create({
       data: {
         productId,
@@ -23,53 +29,63 @@ export class ProductsService {
     });
   }
 
- // Get all products with their category information
-async getProducts() {
-  return this.prisma.product.findMany({
-    include: {
-      category: true,  // Corrected to 'category' (lowercase)
-    },
-  });
-}
+  async getProducts() {
+    return this.prisma.product.findMany({
+      include: {
+        category: true,
+      },
+    });
+  }
 
-// Get a product by its ID
-async getProductById(id: number) {
-  return this.prisma.product.findUnique({
-    where: { id },
-    include: {
-      category: true,  // Corrected to 'category' (lowercase)
-    },
-  });
-}
+  async getProductById(id: number) {
+    const product = await this.prisma.product.findUnique({
+      where: { id },
+      include: {
+        category: true,
+      },
+    });
 
+    if (!product) {
+      throw new Error('Product not found');
+    }
 
-  // Update a product by its ID
- // Update a product by its ID
-async updateProduct(id: number, updateProductDto: UpdateProductDto) {
-  const { productId, productName, productDescription, HSN, categoryId, subCategoryId } = updateProductDto;
+    return product;
+  }
 
-  return this.prisma.product.update({
-    where: { id },
-    data: {
-      productId,
-      productName,
-      productDescription,
-      HSN,
-      categoryId,
-      subCategoryId: Number(subCategoryId), // Ensure it's passed as a number
-    },
-  });
-}
-
-  // Delete a product by its ID
- // Ensure that the id passed is a number
-async deleteProduct(id: number) {
-  return this.prisma.product.delete({
-    where: {
-      id: Number(id), // Convert the id to a number if it's a string
-    },
-  });
-}
-
+  async updateProduct(id: number, updateProductDto: UpdateProductDto) {
+    try {
+      const {
+        productId,
+        productName,
+        productDescription,
+        HSN,
+        categoryId,
+        subCategoryId,
+      } = updateProductDto;
   
+      return await this.prisma.product.update({
+        where: { id },
+        data: {
+          productId,
+          productName,
+          productDescription,
+          HSN,
+          categoryId,
+          subCategoryId: subCategoryId ? Number(subCategoryId) : null,
+        },
+      });
+    } catch (error) {
+      console.error('Error updating product:', error);
+      throw new Error(`Failed to update product: ${error.message}`);
+    }
+  }
+  
+
+  async deleteProduct(id: number) {
+    return this.prisma.product.delete({
+      where: {
+        id: Number(id),
+      },
+    });
+  }
 }
