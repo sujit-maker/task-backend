@@ -1,10 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
-@Controller('products')
-export class ProductsController {
+  @Controller('products')
+  export class ProductsController {
   constructor(private readonly productService: ProductsService) {}
 
   @Post()
@@ -18,8 +18,12 @@ export class ProductsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.productService.getProductById(id);
+  async findOne(@Param('id') id: string) {
+    const productId = parseInt(id, 10); // Parse the string `id` to an integer
+    if (isNaN(productId)) {
+      throw new NotFoundException('Invalid ID');
+    }
+    return this.productService.getProductById(productId);
   }
 
   @Put(':id')
