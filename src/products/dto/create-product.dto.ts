@@ -1,6 +1,10 @@
 import { IsInt, IsString, IsOptional } from 'class-validator';
 
 export class CreateProductDto {
+
+  
+  id: number;
+
   @IsString()
   productId: string;
 

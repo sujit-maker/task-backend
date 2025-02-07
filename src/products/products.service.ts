@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -7,6 +7,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 export class ProductsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  // ✅ Create Product
   async createProduct(createProductDto: CreateProductDto) {
     const {
       productId,
@@ -23,12 +24,13 @@ export class ProductsService {
         productName,
         productDescription,
         HSN,
-        categoryId,
-        subCategoryId,
+        categoryId: Number(categoryId),
+        subCategoryId: subCategoryId ? Number(subCategoryId) : null,
       },
     });
   }
 
+  // ✅ Get All Products
   async getProducts() {
     return this.prisma.product.findMany({
       include: {
@@ -37,21 +39,23 @@ export class ProductsService {
     });
   }
 
+  // ✅ Get Product By ID
   async getProductById(id: number) {
     const product = await this.prisma.product.findUnique({
-      where: { id },
+      where: { id: Number(id) }, // Ensure ID is converted to number
       include: {
         category: true,
       },
     });
 
     if (!product) {
-      throw new Error('Product not found');
+      throw new NotFoundException('Product not found');
     }
 
     return product;
   }
 
+  // ✅ Update Product (Fixed)
   async updateProduct(id: number, updateProductDto: UpdateProductDto) {
     try {
       const {
@@ -62,25 +66,34 @@ export class ProductsService {
         categoryId,
         subCategoryId,
       } = updateProductDto;
-  
+
+      // Convert ID & categoryId to numbers
+      const productIdNumber = Number(id);
+      const categoryNumber = Number(categoryId);
+      const subCategoryNumber = subCategoryId ? Number(subCategoryId) : null;
+
+      if (isNaN(productIdNumber)) {
+        throw new BadRequestException('Invalid product ID');
+      }
+
       return await this.prisma.product.update({
-        where: { id },
+        where: { id: productIdNumber },
         data: {
           productId,
           productName,
           productDescription,
           HSN,
-          categoryId,
-          subCategoryId: subCategoryId ? Number(subCategoryId) : null,
+          categoryId: categoryNumber,
+          subCategoryId: subCategoryNumber,
         },
       });
     } catch (error) {
       console.error('Error updating product:', error);
-      throw new Error(`Failed to update product: ${error.message}`);
+      throw new BadRequestException(`Failed to update product: ${error.message}`);
     }
   }
-  
 
+  // ✅ Delete Product
   async deleteProduct(id: number) {
     return this.prisma.product.delete({
       where: {
